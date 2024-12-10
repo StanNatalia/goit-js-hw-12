@@ -1,17 +1,14 @@
-import iziToast from "izitoast";
-import "izitoast/dist/css/iziToast.min.css";
-import pathErrorIcon from "./img/icon-error.svg";
-
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-const API_KEY = '47417637-c5af89f5f9dac842b4dab7627'; 
-const BASE_URL = 'https://pixabay.com/api/';
+import { serviceGallery } from './js/pixabay-api.js';
+import { showErrorToast, createMarkUp } from './js/render-functions.js';
 
 const form = document.querySelector('.search-input');
 const list = document.querySelector('.list');
 const loadMore = document.querySelector('.js-load-more');
 const loader = document.querySelector(".loader");
+let page = 1;
 
 
 let lightbox = new SimpleLightbox('.gallery a', {
@@ -19,14 +16,6 @@ let lightbox = new SimpleLightbox('.gallery a', {
     captionsData: 'alt',
     captionsDelay: 250,
 });
-
-
-import axios from 'axios';
-
-
-loadMore.addEventListener("click", onLoadMore);
-
-let page = 1;
 
 
 form.addEventListener("submit", handlerSearch);
@@ -72,57 +61,6 @@ function handlerSearch(event) {
 }
 
 
-
-function showErrorToast(message) {
-    iziToast.show({
-        theme: 'dark',
-        titleColor: 'white',
-        titleSize: '16px',
-        messageLineHeight: '150%',
-        messageSize: '16px',
-        color: 'white',
-        iconUrl: pathErrorIcon,
-        backgroundColor: "#ef4040",
-        messageColor: "white",
-        message,
-        position: 'topRight',
-        timeout: 2000
-    });
-}
-
-
-async function serviceGallery(query = "", page = 1, perPage = 15) {
-    const params = new URLSearchParams({
-        key: API_KEY,
-        page,
-        q: query,
-        image_type: "photo",
-        orientation: "horizontal",
-        safesearch: true,
-        per_page: perPage
-    });
-
-    const { data } = await axios(`${BASE_URL}?${params}`);
-    return data;
-}
-
-function createMarkUp(arr) {
-    return arr.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => 
-        `<li class="gallery">
-            <a href="${largeImageURL}" class="gallery-item">
-                <img class="image" src="${webformatURL}" alt="${tags}" loading="lazy" />
-                <div class="info">
-                    <p class="title-info">Likes: <span class="value">${likes}</span></p>
-                    <p class="title-info">Views: <span class="value">${views}</span></p>
-                    <p class="title-info">Comments: <span class="value">${comments}</span></p>
-                    <p class="title-info">Downloads: <span class="value">${downloads}</span></p>
-                </div>
-            </a>
-        </li>`
-    ).join("");
-}
-
-
 serviceGallery(page)
 .then(data => {
     console.log(data);
@@ -134,6 +72,8 @@ serviceGallery(page)
 .catch(error => 
     alert(error.message)
 )
+
+loadMore.addEventListener("click", onLoadMore);
 
 
 async function onLoadMore() {
@@ -149,3 +89,7 @@ async function onLoadMore() {
         alert(error.message);
     }
 }
+
+
+
+
