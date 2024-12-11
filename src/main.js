@@ -68,6 +68,8 @@ async function loadGallery(page) {
         const data = await serviceGallery(currentQuery,page);
         console.log(data);
 
+        loadGallery();
+
         if (data.total > 15) {
             loadMoreButton.classList.remove("is-hidden");
             console.log("data.total");
@@ -80,7 +82,6 @@ async function loadGallery(page) {
     }
 }
 
-loadGallery();
 
 loadMoreButton.addEventListener("click", onLoadMore);
 
