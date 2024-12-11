@@ -7,7 +7,7 @@ import iziToast from "izitoast";
 
 const form = document.querySelector('.search-input');
 const list = document.querySelector('.list');
-const loadMore = document.querySelector('.js-load-more');
+const loadMoreButton = document.querySelector('.load-more');
 const loader = document.querySelector(".loader");
 let page = 1;
 let lastPage;
@@ -21,7 +21,7 @@ let lightbox = new SimpleLightbox('.gallery a', {
     captionsDelay: 250,
 });
 
-
+loadMoreButton.classList.add("is-hidden");
 form.addEventListener("submit", handlerSearch);
 
 async function handlerSearch(event) {
@@ -39,7 +39,7 @@ async function handlerSearch(event) {
     page = 1;
     list.innerHTML = '';
     loader.style.display = "block";
-    loadMore.classList.add("is-hidden");
+    loadMoreButton.classList.add("is-hidden");
 
     
 try {
@@ -51,7 +51,6 @@ try {
     }
     list.innerHTML = createMarkUp(data.hits);
     lightbox.refresh();
-    loadMore.classList.toggle("is-hidden", lastPage <= page);
            
 } catch(error) {
             showErrorToast("Sorry, there are no images matching your search query. Please try again!");
@@ -70,31 +69,31 @@ async function loadGallery(page) {
         console.log(data);
 
         if (data.total > 15) {
-            loadMore.classList.replace("is-hidden", "load-more");
+            loadMoreButton.classList.remove("is-hidden");
+            console.log("data.total");
         } else {
-            loadMore.classList.add('is-hidden');
             iziToast.info({title: 'End of results', message: 'You have reached the end of the search results.'});
         }
     } catch (error) {
-        loadMore.classList.add('is-hidden');
+        loadMoreButton.classList.add('is-hidden');
         iziToast.info({title: 'Error', message: error.message});
     }
 }
 
 loadGallery();
 
-loadMore.addEventListener("click", onLoadMore);
+loadMoreButton.addEventListener("click", onLoadMore);
 
 
 async function onLoadMore() {
     page++;
-    loadMore.classList.remove('is-hidden');
+    loadMoreButton.classList.remove('is-hidden');
 
     try {
         const data = await serviceGallery(currentQuery, page);
         list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
         if (lastPage === page ) { 
-            loadMore.classList.add("is-hidden");
+            loadMoreButton.classList.add("is-hidden");
         }
 
         const galleryItems = document.querySelectorAll('.gallery-item');
@@ -111,7 +110,7 @@ async function onLoadMore() {
         
     } catch(error) {
         alert(error.message);
-        loadMore.classList.add("is-hidden");
+        loadMoreButton.classList.add("is-hidden");
     }
 }
 
