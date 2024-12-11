@@ -161,9 +161,6 @@ letter-spacing: 0.04em;
 color: #2e2f42;
 }
 
-.is-hidden {
-    display: none;
-}
 
 .load-more {
     display: block;
@@ -185,4 +182,8 @@ color: #2e2f42;
 .load-more:hover,
 .load-more:focus {
     background: #6c8cff; 
+}
+
+.is-hidden {
+    display: none;
 }

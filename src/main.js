@@ -39,7 +39,7 @@ async function handlerSearch(event) {
     page = 1;
     list.innerHTML = '';
     loader.style.display = "block";
-    loadMoreButton.classList.add("is-hidden");
+    loadMoreButton.classList.remove("is-hidden");
 
     
 try {
@@ -81,7 +81,6 @@ async function loadGallery(page) {
         iziToast.info({title: 'Error', message: error.message});
     }
 }
-
 
 loadMoreButton.addEventListener("click", onLoadMore);
 
