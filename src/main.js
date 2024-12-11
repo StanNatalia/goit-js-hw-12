@@ -3,12 +3,15 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 
 import { serviceGallery } from './js/pixabay-api.js';
 import { showErrorToast, createMarkUp } from './js/render-functions.js';
+import iziToast from "izitoast";
 
 const form = document.querySelector('.search-input');
 const list = document.querySelector('.list');
 const loadMore = document.querySelector('.js-load-more');
 const loader = document.querySelector(".loader");
 let page = 1;
+let lastPage;
+   
 
 
 let lightbox = new SimpleLightbox('.gallery a', {
@@ -20,7 +23,7 @@ let lightbox = new SimpleLightbox('.gallery a', {
 
 form.addEventListener("submit", handlerSearch);
 
-function handlerSearch(event) {
+async function handlerSearch(event) {
     event.preventDefault();
     const { query } = event.target.elements;
 
@@ -31,62 +34,69 @@ function handlerSearch(event) {
         return;
     }
 
-
+    page = 1;
     list.innerHTML = '';
     loader.style.display = "block";
+    loadMore.classList.add("is-hidden");
+
     
-
-
-    serviceGallery(query.value)
-
-        .then(data => {
-            if (data.hits.length === 0) {
-                showErrorToast("No images found. Please try a different query!");
-                return;
-            }
-            list.innerHTML = createMarkUp(data.hits);
-            lightbox.refresh();
-        })
-
-        .catch(error => {
+try {
+    const data = await serviceGallery(query.value, page);
+    lastPage = Math.ceil(data.total / 15);
+    if (data.hits.length === 0) {
+        showErrorToast("No images found. Please try a different query!");
+        return;
+    }
+    list.innerHTML = createMarkUp(data.hits);
+    lightbox.refresh();
+           
+} catch(error) {
             showErrorToast("Sorry, there are no images matching your search query. Please try again!");
             list.innerHTML = '';
             loader.style.display = "none";
-        })
-
-        .finally(() => {
+} finally {
             loader.style.display = "none";
             event.target.reset();
-        });
+        }
 }
 
 
-serviceGallery(page)
-.then(data => {
-    console.log(data);
-    list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
+async function loadGallery(page) {
+    try {
+        const data = await serviceGallery(page);
+        console.log(data);
 
-    if(data.total > page * 15) {
-        loadMore.classList.replace("load-more-hidden", "load-more");} 
-})
-.catch(error => 
-    alert(error.message)
-)
+        if (data.total > 15) {
+            loadMore.classList.replace("is-hidden", "load-more");
+        } else {
+            loadMore.classList.add('is-hidden');
+            iziToast.info({title: 'End of results', message: 'You have reached the end of the search results.'});
+        }
+    } catch (error) {
+        loadMore.classList.add('is-hidden');
+        iziToast.info({title: 'Error', message: error.message});
+    }
+}
+
+loadGallery(page);
+
+
 
 loadMore.addEventListener("click", onLoadMore);
 
 
 async function onLoadMore() {
     page++;
-
+    loadMore.classList.remove('is-hidden');
     try {
         const data = await serviceGallery(page);
         list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
-        if (data.total <= page * 15) { 
-            loadMore.classList.add("load-more-hidden");
+        if (lastPage === page ) { 
+            loadMore.classList.add("is-hidden");
         }
     } catch(error) {
         alert(error.message);
+        loadMore.classList.add("is-hidden");
     }
 }
 

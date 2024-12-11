@@ -161,7 +161,7 @@ letter-spacing: 0.04em;
 color: #2e2f42;
 }
 
-.load-more-hidden {
+.is-hidden {
     display: none;
 }
 
@@ -182,7 +182,7 @@ color: #2e2f42;
     transition: background-color 0.3s, transform 0.3s;
 }
 
-button:hover,
-button:focus {
+.load-more:hover,
+.load-more:focus {
     background: #6c8cff; 
 }
