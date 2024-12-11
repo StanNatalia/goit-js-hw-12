@@ -90,7 +90,14 @@ async function onLoadMore() {
     page++;
     loadMore.classList.remove('is-hidden');
 
-    const galleryItems = document.querySelectorAll('.gallery-item');
+    try {
+        const data = await serviceGallery(currentQuery, page);
+        list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
+        if (lastPage === page ) { 
+            loadMore.classList.add("is-hidden");
+        }
+
+        const galleryItems = document.querySelectorAll('.gallery-item');
     if (galleryItems.length > 0) {
     const cardHeight = galleryItems[0].getBoundingClientRect().height;
 
@@ -98,15 +105,7 @@ async function onLoadMore() {
         top: cardHeight * 2,
         behavior: 'smooth', 
     });
-  }
-
-
-    try {
-        const data = await serviceGallery(currentQuery, page);
-        list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
-        if (lastPage === page ) { 
-            loadMore.classList.add("is-hidden");
-        }
+  }git 
 
         
         
