@@ -11,6 +11,7 @@ const loadMore = document.querySelector('.js-load-more');
 const loader = document.querySelector(".loader");
 let page = 1;
 let lastPage;
+let currentQuery = '';
    
 
 
@@ -34,6 +35,7 @@ async function handlerSearch(event) {
         return;
     }
 
+    currentQuery = query.value;
     page = 1;
     list.innerHTML = '';
     loader.style.display = "block";
@@ -41,7 +43,7 @@ async function handlerSearch(event) {
 
     
 try {
-    const data = await serviceGallery(query.value, page);
+    const data = await serviceGallery(currentQuery, page);
     lastPage = Math.ceil(data.total / 15);
     if (data.hits.length === 0) {
         showErrorToast("No images found. Please try a different query!");
@@ -49,6 +51,7 @@ try {
     }
     list.innerHTML = createMarkUp(data.hits);
     lightbox.refresh();
+    loadMore.classList.toggle("is-hidden", lastPage <= page);
            
 } catch(error) {
             showErrorToast("Sorry, there are no images matching your search query. Please try again!");
@@ -63,7 +66,7 @@ try {
 
 async function loadGallery(page) {
     try {
-        const data = await serviceGallery(page);
+        const data = await serviceGallery(currentQuery,page);
         console.log(data);
 
         if (data.total > 15) {
@@ -78,9 +81,7 @@ async function loadGallery(page) {
     }
 }
 
-loadGallery(page);
-
-
+loadGallery();
 
 loadMore.addEventListener("click", onLoadMore);
 
@@ -88,12 +89,14 @@ loadMore.addEventListener("click", onLoadMore);
 async function onLoadMore() {
     page++;
     loadMore.classList.remove('is-hidden');
+
     try {
-        const data = await serviceGallery(page);
+        const data = await serviceGallery(currentQuery, page);
         list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
         if (lastPage === page ) { 
             loadMore.classList.add("is-hidden");
         }
+        
     } catch(error) {
         alert(error.message);
         loadMore.classList.add("is-hidden");
