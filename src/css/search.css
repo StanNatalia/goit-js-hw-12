@@ -161,7 +161,7 @@ letter-spacing: 0.04em;
 color: #2e2f42;
 }
 
-.load-more.is-hidden {
+.is-hidden {
     display: none;
 }
 
