@@ -105,7 +105,7 @@ async function onLoadMore() {
         top: cardHeight * 2,
         behavior: 'smooth', 
     });
-  }git 
+  }
 
         
         
