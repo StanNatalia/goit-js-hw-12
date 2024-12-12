@@ -54,6 +54,8 @@ try {
         showErrorToast("No images found. Please try a different query!");
         return;
     }
+    loader.style.display = "none";
+    loadMoreButton.classList.add("is-hidden");
     list.innerHTML = createMarkUp(data.hits);
     lightbox.refresh();
            
