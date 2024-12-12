@@ -9,12 +9,11 @@ const form = document.querySelector('.search-input');
 const list = document.querySelector('.list');
 const loadMoreButton = document.querySelector('.load-more');
 const loader = document.querySelector(".loader");
+
 let page = 1;
 let lastPage;
 let currentQuery = '';
    
-
-
 let lightbox = new SimpleLightbox('.gallery a', {
     captions: true,
     captionsData: 'alt',
@@ -22,14 +21,17 @@ let lightbox = new SimpleLightbox('.gallery a', {
 });
 
 loadMoreButton.classList.add("is-hidden");
+loader.style.display = "none";
+
 form.addEventListener("submit", handlerSearch);
 
 async function handlerSearch(event) {
     event.preventDefault();
+    
     const { query } = event.target.elements;
     const trimmedQuery = query.value.trim();
     
-
+    
     if (!trimmedQuery) {
         showErrorToast("Please enter a search query!");
         list.innerHTML = '';
@@ -44,14 +46,11 @@ async function handlerSearch(event) {
     loader.style.display = "block";
     loadMoreButton.classList.remove("is-hidden");
 
-    
 try {
     const data = await serviceGallery(currentQuery, page);
     lastPage = Math.ceil(data.total / 15);
 
     if (data.hits.length === 0) {
-        loader.style.display = "none";
-        loadMoreButton.classList.add("is-hidden");
         showErrorToast("No images found. Please try a different query!");
         return;
     }
@@ -96,11 +95,13 @@ loadMoreButton.addEventListener("click", onLoadMore);
 async function onLoadMore() {
     page++;
     loadMoreButton.classList.remove('is-hidden');
+    loader.style.display = "none";
 
     try {
         const data = await serviceGallery(currentQuery, page);
         list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
         if (lastPage === page ) { 
+            loader.style.display = "none";
             loadMoreButton.classList.add("is-hidden");
         }
 

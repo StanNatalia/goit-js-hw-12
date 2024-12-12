@@ -4,6 +4,8 @@ const API_KEY = '47417637-c5af89f5f9dac842b4dab7627';
 const BASE_URL = 'https://pixabay.com/api/';
 
 export async function serviceGallery(query = "", page = 1, perPage = 15) {
+    
+    
     const params = new URLSearchParams({
         key: API_KEY,
         page,
@@ -14,6 +16,10 @@ export async function serviceGallery(query = "", page = 1, perPage = 15) {
         per_page: perPage
     });
 
+    
     const { data } = await axios(`${BASE_URL}?${params}`);
+
+    
+
     return data;
 }
