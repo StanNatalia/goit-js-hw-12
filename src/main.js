@@ -27,15 +27,18 @@ form.addEventListener("submit", handlerSearch);
 async function handlerSearch(event) {
     event.preventDefault();
     const { query } = event.target.elements;
+    const trimmedQuery = query.value.trim();
+    
 
-    if (!query.value) {
+    if (!trimmedQuery) {
         showErrorToast("Please enter a search query!");
         list.innerHTML = '';
         loader.style.display = "none";
+        loadMoreButton.classList.add("is-hidden");
         return;
     }
 
-    currentQuery = query.value;
+    currentQuery = trimmedQuery;
     page = 1;
     list.innerHTML = '';
     loader.style.display = "block";
@@ -45,7 +48,10 @@ async function handlerSearch(event) {
 try {
     const data = await serviceGallery(currentQuery, page);
     lastPage = Math.ceil(data.total / 15);
+
     if (data.hits.length === 0) {
+        loader.style.display = "none";
+        loadMoreButton.classList.add("is-hidden");
         showErrorToast("No images found. Please try a different query!");
         return;
     }
@@ -56,6 +62,7 @@ try {
             showErrorToast("Sorry, there are no images matching your search query. Please try again!");
             list.innerHTML = '';
             loader.style.display = "none";
+            loadMoreButton.classList.add("is-hidden");
 } finally {
             loader.style.display = "none";
             event.target.reset();
@@ -78,6 +85,7 @@ async function loadGallery(page) {
         }
     } catch (error) {
         loadMoreButton.classList.add('is-hidden');
+        loader.style.display = "none";
         iziToast.info({title: 'Error', message: error.message});
     }
 }
@@ -105,11 +113,10 @@ async function onLoadMore() {
         behavior: 'smooth', 
     });
   }
-
-        
-        
+  
     } catch(error) {
         alert(error.message);
+        loader.style.display = "none";
         loadMoreButton.classList.add("is-hidden");
     }
 }
