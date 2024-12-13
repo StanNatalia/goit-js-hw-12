@@ -43,12 +43,15 @@ async function handlerSearch(event) {
     currentQuery = trimmedQuery;
     page = 1;
     list.innerHTML = '';
+    loadMoreButton.classList.add("is-hidden");
    
 try {
     const data = await serviceGallery(currentQuery, page);
     lastPage = Math.ceil(data.total / 15);
+    
 
     if (data.hits.length === 0) {
+       
         showErrorToast("No images found. Please try a different query!");
         return;
     }
@@ -74,7 +77,7 @@ async function loadGallery(page) {
         const data = await serviceGallery(currentQuery,page);
         console.log(data);
 
-        loadGallery(page);
+        loadGallery();
 
         if (data.total > 15) {
             loadMoreButton.classList.remove("is-hidden");
