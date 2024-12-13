@@ -43,9 +43,7 @@ async function handlerSearch(event) {
     currentQuery = trimmedQuery;
     page = 1;
     list.innerHTML = '';
-    loader.style.display = "block";
-    loadMoreButton.classList.remove("is-hidden");
-
+   
 try {
     const data = await serviceGallery(currentQuery, page);
     lastPage = Math.ceil(data.total / 15);
@@ -55,7 +53,7 @@ try {
         return;
     }
     loader.style.display = "none";
-    loadMoreButton.classList.add("is-hidden");
+    loadMoreButton.classList.remove("is-hidden");
     list.innerHTML = createMarkUp(data.hits);
     lightbox.refresh();
            
@@ -76,7 +74,7 @@ async function loadGallery(page) {
         const data = await serviceGallery(currentQuery,page);
         console.log(data);
 
-        loadGallery();
+        loadGallery(page);
 
         if (data.total > 15) {
             loadMoreButton.classList.remove("is-hidden");
@@ -102,6 +100,8 @@ async function onLoadMore() {
     try {
         const data = await serviceGallery(currentQuery, page);
         list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
+        lightbox.refresh();
+        
         if (lastPage === page ) { 
             loader.style.display = "none";
             loadMoreButton.classList.add("is-hidden");
