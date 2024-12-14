@@ -44,6 +44,8 @@ async function handlerSearch(event) {
     page = 1;
     list.innerHTML = '';
     loadMoreButton.classList.add("is-hidden");
+
+    loader.style.display = "block";
    
 try {
     const data = await serviceGallery(currentQuery, page);
@@ -55,10 +57,16 @@ try {
         showErrorToast("No images found. Please try a different query!");
         return;
     }
+
     loader.style.display = "none";
     loadMoreButton.classList.remove("is-hidden");
     list.innerHTML = createMarkUp(data.hits);
     lightbox.refresh();
+    if (lastPage === page ) { 
+        loader.style.display = "none";
+        loadMoreButton.classList.add("is-hidden");
+    }
+
            
 } catch(error) {
             showErrorToast("Sorry, there are no images matching your search query. Please try again!");
@@ -98,12 +106,14 @@ loadMoreButton.addEventListener("click", onLoadMore);
 async function onLoadMore() {
     page++;
     loadMoreButton.classList.remove('is-hidden');
-    loader.style.display = "none";
+    loader.style.display = "block";
 
     try {
         const data = await serviceGallery(currentQuery, page);
         list.insertAdjacentHTML("beforeend", createMarkUp(data.hits));
         lightbox.refresh();
+        loadMoreButton.classList.remove('is-hidden');
+        loader.style.display = "none";
         
         if (lastPage === page ) { 
             loader.style.display = "none";
